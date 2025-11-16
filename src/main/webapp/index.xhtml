@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html">
+
+<h:head>
+    <title>Web lab 3</title>
+    <link rel="stylesheet" href="resources/stylesheets/index_style.css"/>
+</h:head>
+
+<h:body>
+    <div class="main-container">
+        <div class="header">
+            Вавилина Екатерина Андреевна<br/>
+            Группа P3330, Вариант 141414
+        </div>
+
+        <div class="clock-panel">
+            <div id="clock-container">
+                <div class="seven-segment-display">
+                    <div class="time-group">
+                        <div class="digit" id="digit-h1"><div class="segment a"></div><div class="segment b"></div><div class="segment c"></div><div class="segment d"></div><div class="segment e"></div><div class="segment f"></div><div class="segment g"></div></div>
+                        <div class="digit" id="digit-h2"><div class="segment a"></div><div class="segment b"></div><div class="segment c"></div><div class="segment d"></div><div class="segment e"></div><div class="segment f"></div><div class="segment g"></div></div>
+                    </div>
+
+                    <div class="colon"><div class="dot top on"></div><div class="dot bottom on"></div></div>
+
+                    <div class="time-group">
+                        <div class="digit" id="digit-m1"><div class="segment a"></div><div class="segment b"></div><div class="segment c"></div><div class="segment d"></div><div class="segment e"></div><div class="segment f"></div><div class="segment g"></div></div>
+                        <div class="digit" id="digit-m2"><div class="segment a"></div><div class="segment b"></div><div class="segment c"></div><div class="segment d"></div><div class="segment e"></div><div class="segment f"></div><div class="segment g"></div></div>
+                    </div>
+
+                    <div class="colon"><div class="dot top on"></div><div class="dot bottom on"></div></div>
+
+                    <div class="time-group">
+                        <div class="digit" id="digit-s1"><div class="segment a"></div><div class="segment b"></div><div class="segment c"></div><div class="segment d"></div><div class="segment e"></div><div class="segment f"></div><div class="segment g"></div></div>
+                        <div class="digit" id="digit-s2"><div class="segment a"></div><div class="segment b"></div><div class="segment c"></div><div class="segment d"></div><div class="segment e"></div><div class="segment f"></div><div class="segment g"></div></div>
+                    </div>
+                </div>
+
+                <div id="date-display"></div>
+            </div>
+
+            <div class="button-panel">
+                <h:form>
+                    <h:commandButton value="На главную" action="main" styleClass="main-button"/>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+    <h:outputScript library="scripts" name="clock.js" target="body"/>
+</h:body>
+</html>
