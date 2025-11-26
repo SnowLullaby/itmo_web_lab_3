@@ -3,9 +3,137 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
-      xmlns:f="jakarta.faces.core">
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
 
+<h:head>
+    <title>Web lab 3 - Основная страница</title>
+    <link rel="stylesheet" href="resources/stylesheets/style.css"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</h:head>
+
+<h:body>
 <f:view>
-    <h:outputLabel value="Hello, world"/>
+    <div class="main-container">
+        <div class="header">
+            Вавилина Екатерина Андреевна<br/>
+            Группа P3330, Вариант 141414
+        </div>
+
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close">×</span>
+                <p>Очистить всю историю точек?</p>
+                <div class="modal-buttons">
+                    <button type="button" class="modal-button confirm-button">Продолжить</button>
+                    <button type="button" class="modal-button cancel-button">Отмена</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-graph-container">
+            <div class="form-cell">
+                <h:form id="pointForm">
+                    <div class="form-block">
+                        <label>X:</label>
+                        <p:spinner id="x" value="#{hitBean.x}" min="-3" max="3" stepFactor="1" required="true" requiredMessage="X обязателен"/>
+                        <h:message for="x" styleClass="error-message"/>
+                    </div>
+
+                    <div class="form-block">
+                        <label>Y:</label>
+                        <p:inputText id="y" value="#{hitBean.y}" placeholder="-5 ... 5" required="true" requiredMessage="Y обязателен"
+                                     converterMessage="Y должен быть числом" validatorMessage="Y должен быть в диапазоне от -5 до 5">
+                            <f:convertNumber />
+                            <f:validateDoubleRange minimum="-5" maximum="5"/>
+                        </p:inputText>
+                        <h:message for="y" styleClass="error-message"/>
+                    </div>
+
+                    <div class="form-block">
+                        <label>Z:</label>
+                        <p:selectManyCheckbox id="zValues" value="#{hitBean.ZValues}" layout="grid" columns="5" styleClass="z-button-group" required="true" requiredMessage="Выберите хотя бы одно Z">
+                            <f:selectItem itemLabel="-4" itemValue="-4"/>
+                            <f:selectItem itemLabel="-3" itemValue="-3"/>
+                            <f:selectItem itemLabel="-2" itemValue="-2"/>
+                            <f:selectItem itemLabel="-1" itemValue="-1"/>
+                            <f:selectItem itemLabel="0" itemValue="0"/>
+                            <f:selectItem itemLabel="1" itemValue="1"/>
+                            <f:selectItem itemLabel="2" itemValue="2"/>
+                            <f:selectItem itemLabel="3" itemValue="3"/>
+                            <f:selectItem itemLabel="4" itemValue="4"/>
+                        </p:selectManyCheckbox>
+                        <h:message for="zValues" styleClass="error-message"/>
+                    </div>
+
+                    <div class="form-block">
+                        <label>R:</label>
+                        <h:inputHidden id="r_hidden" value="#{hitBean.r}" required="true" requiredMessage="R обязателен">
+                            <f:validateDoubleRange minimum="1" maximum="4"/>
+                        </h:inputHidden>
+                        <p:slider widgetVar="rSlider" for="r_hidden" minValue="1" maxValue="4" step="0.5" style="width:100%; margin-top:10px" onSlideEnd="updateR(event.value)"/>
+                        <p:outputLabel id="r_label" value="R = #{hitBean.r}" style="margin-left:10px;font-weight:bold;color:#2d4057"/>
+                        <h:message for="r_hidden" styleClass="error-message"/>
+                    </div>
+
+                    <div class="form-block">
+                        <p:commandButton value="Отправить" action="#{hitBean.submit}" update="resultsTable canvasWrapper messages" process="@form"/>
+                        <p:messages id="messages" autoUpdate="true" styleClass="error-message"/>
+                    </div>
+                </h:form>
+            </div>
+
+            <div class="graph-cell">
+                <h:panelGroup id="canvasWrapper">
+                    <canvas id="graphCanvas" width="500" height="500"></canvas>
+                </h:panelGroup>
+                <h:form>
+                    <h:commandButton value="Посмотреть время" action="index" styleClass="index-button"/>
+                </h:form>
+            </div>
+        </div>
+
+        <div class="results-container">
+            <button type="button" class="update-button" onclick="refreshPageData()">Обновить таблицу</button>
+            <button type="button" class="clear-button" onclick="clearHistory()">Очистить историю</button>
+
+            <h:dataTable id="resultsTable" value="#{pointList.points}" var="p">
+                <h:column>
+                    <f:facet name="header">X</f:facet>
+                    <h:outputText value="#{p.x}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Y</f:facet>
+                    <h:outputText value="#{p.y}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Z</f:facet>
+                    <h:outputText value="#{p.z}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">R</f:facet>
+                    <h:outputText value="#{p.r}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Попадание</f:facet>
+                    <h:outputText value="#{p.hit ? 'Попадание' : 'Промах'}">
+                        <f:attribute name="data-result" value="#{p.hit}"/>
+                    </h:outputText>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Время запроса</f:facet>
+                    <h:outputText value="#{p.currentTime}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Время выполнения</f:facet>
+                    <h:outputText value="#{p.executionTimeNs} ns"/>
+                </h:column>
+            </h:dataTable>
+        </div>
+    </div>
+
+    <h:outputScript library="scripts" name="graph.js"/>
 </f:view>
+</h:body>
 </html>
