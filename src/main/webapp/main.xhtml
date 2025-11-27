@@ -4,7 +4,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:f="jakarta.faces.core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
 <h:head>
     <title>Web lab 3 - Основная страница</title>
@@ -21,17 +22,6 @@
             Группа P3330, Вариант 141414
         </div>
 
-        <div id="modal" class="modal">
-            <div class="modal-content">
-                <span class="modal-close">×</span>
-                <p>Очистить всю историю точек?</p>
-                <div class="modal-buttons">
-                    <button type="button" class="modal-button confirm-button">Продолжить</button>
-                    <button type="button" class="modal-button cancel-button">Отмена</button>
-                </div>
-            </div>
-        </div>
-
         <div class="form-graph-container">
             <div class="form-cell">
                 <h:form id="pointForm">
@@ -45,7 +35,7 @@
                         <label>Y:</label>
                         <p:inputText id="y" value="#{hitBean.y}" placeholder="-5 ... 5" required="true" requiredMessage="Y обязателен"
                                      converterMessage="Y должен быть числом" validatorMessage="Y должен быть в диапазоне от -5 до 5">
-                            <f:convertNumber />
+                            <f:convertNumber type="number" locale="en_US" />
                             <f:validateDoubleRange minimum="-5" maximum="5"/>
                         </p:inputText>
                         <h:message for="y" styleClass="error-message"/>
@@ -53,7 +43,7 @@
 
                     <div class="form-block">
                         <label>Z:</label>
-                        <p:selectManyCheckbox id="zValues" value="#{hitBean.ZValues}" layout="grid" columns="5" styleClass="z-button-group" required="true" requiredMessage="Выберите хотя бы одно Z">
+                        <p:selectManyCheckbox id="zValues" value="#{hitBean.ZValues}" layout="grid" columns="5" styleClass="z-button-group" required="true" requiredMessage="Выберите хотя бы один Z">
                             <f:selectItem itemLabel="-4" itemValue="-4"/>
                             <f:selectItem itemLabel="-3" itemValue="-3"/>
                             <f:selectItem itemLabel="-2" itemValue="-2"/>
@@ -68,26 +58,53 @@
                     </div>
 
                     <div class="form-block">
-                        <label>R:</label>
-                        <h:inputHidden id="r_hidden" value="#{hitBean.r}" required="true" requiredMessage="R обязателен">
+                        <label for="r">R:</label>
+                        <p:slider widgetVar="rSlider" id="r_slider" for="r" minValue="1" maxValue="4" step="0.5" style="width:100%; margin-top:10px" onSlideEnd="updateR(ui.value); document.getElementById('pointForm:r').value = ui.value;"/>
+                        <h:inputText id="r" value="#{hitBean.r}" required="true" requiredMessage="R обязателен"
+                                     converterMessage="R должен быть числом" validatorMessage="R должен быть в диапазоне от 1 до 4">
                             <f:validateDoubleRange minimum="1" maximum="4"/>
-                        </h:inputHidden>
-                        <p:slider widgetVar="rSlider" for="r_hidden" minValue="1" maxValue="4" step="0.5" style="width:100%; margin-top:10px" onSlideEnd="updateR(event.value)"/>
-                        <p:outputLabel id="r_label" value="R = #{hitBean.r}" style="margin-left:10px;font-weight:bold;color:#2d4057"/>
-                        <h:message for="r_hidden" styleClass="error-message"/>
+                            <f:ajax event="blur" process="@this" render="messages" onevent="function(data) { if (data.status === 'success') { updateR(document.getElementById('pointForm:r').value); setSliderValue(document.getElementById('pointForm:r').value); } }"/>
+                        </h:inputText>
                     </div>
 
                     <div class="form-block">
-                        <p:commandButton value="Отправить" action="#{hitBean.submit}" update="resultsTable canvasWrapper messages" process="@form"/>
+                        <p:commandButton id="submit" value="Отправить" action="#{hitBean.submit}" update="resultsTable pointsData messages" process="@form" oncomplete="drawGraph(currentR)"/>
                         <p:messages id="messages" autoUpdate="true" styleClass="error-message"/>
                     </div>
+                </h:form>
+
+                <h:form id="graphForm">
+                    <h:inputHidden id="graphX" value="#{hitBean.graphX}" required="true" validatorMessage="X должен быть в диапазоне от -3 до 3">
+                        <f:convertNumber type="number" locale="en_US" />
+                        <f:validateDoubleRange minimum="-3" maximum="3"/>
+                    </h:inputHidden>
+                    <h:inputHidden id="graphY" value="#{hitBean.graphY}" required="true" validatorMessage="Y должен быть в диапазоне от -5 до 5">
+                        <f:convertNumber type="number" locale="en_US" />
+                        <f:validateDoubleRange minimum="-5" maximum="5"/>
+                    </h:inputHidden>
+                    <h:inputHidden id="graphZ" value="#{hitBean.graphZ}" required="true" validatorMessage="Z должен быть в диапазоне от -4 до 4">
+                        <f:convertNumber type="number" locale="en_US" />
+                        <f:validateDoubleRange minimum="-4" maximum="4"/>
+                    </h:inputHidden>
+                    <h:inputHidden id="graphR" value="#{hitBean.r}" required="true" validatorMessage="R должен быть в диапазоне от 1 до 4">
+                        <f:convertNumber type="number" locale="en_US" />
+                        <f:validateDoubleRange minimum="1" maximum="4"/>
+                    </h:inputHidden>
+                    <p:commandButton id="graphSubmit" style="display:none;" action="#{hitBean.submit}" process="@form pointForm:r" update="resultsTable pointsData pointForm:messages" oncomplete="drawGraph(currentR)"/>
                 </h:form>
             </div>
 
             <div class="graph-cell">
-                <h:panelGroup id="canvasWrapper">
-                    <canvas id="graphCanvas" width="500" height="500"></canvas>
-                </h:panelGroup>
+                <p:outputPanel id="pointsData">
+                    <h:outputScript>
+                        window.ALL_POINTS_FROM_SESSION = [
+                        <c:forEach items="#{pointList.getPoints()}" var="point" varStatus="status">
+                            { x: #{point.x}, y: #{point.y}, z: #{point.z}, r: #{point.r}, hit: #{point.hit} }<c:if test="#{!status.last}">,</c:if>
+                        </c:forEach>
+                        ];
+                    </h:outputScript>
+                </p:outputPanel>
+                <canvas id="graphCanvas" width="500" height="500" ondblclick="handleCanvasClick(event)"></canvas>
                 <h:form>
                     <h:commandButton value="Посмотреть время" action="index" styleClass="index-button"/>
                 </h:form>
@@ -95,10 +112,12 @@
         </div>
 
         <div class="results-container">
-            <button type="button" class="update-button" onclick="refreshPageData()">Обновить таблицу</button>
-            <button type="button" class="clear-button" onclick="clearHistory()">Очистить историю</button>
+            <h:form style="display: flex; gap: 15px; align-items: center; margin: 15px 0;">
+                <p:commandButton value="Обновить таблицу" update="resultsTable pointsData" oncomplete="drawGraph(currentR)" styleClass="update-button"/>
+                <p:commandButton value="Очистить историю" action="#{pointList.clear}" update="resultsTable pointsData" oncomplete="drawGraph(currentR)" styleClass="clear-button"/>
+            </h:form>
 
-            <h:dataTable id="resultsTable" value="#{pointList.points}" var="p">
+            <h:dataTable id="resultsTable" value="#{pointList.getPoints()}" var="p">
                 <h:column>
                     <f:facet name="header">X</f:facet>
                     <h:outputText value="#{p.x}"/>
@@ -117,9 +136,7 @@
                 </h:column>
                 <h:column>
                     <f:facet name="header">Попадание</f:facet>
-                    <h:outputText value="#{p.hit ? 'Попадание' : 'Промах'}">
-                        <f:attribute name="data-result" value="#{p.hit}"/>
-                    </h:outputText>
+                    <h:outputText value="#{p.hit ? 'Попадание' : 'Промах'}" styleClass="#{p.hit ? 'hit-yes' : 'hit-no'}"/>
                 </h:column>
                 <h:column>
                     <f:facet name="header">Время запроса</f:facet>

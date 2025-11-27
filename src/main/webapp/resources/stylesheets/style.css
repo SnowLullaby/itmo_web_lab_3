@@ -73,9 +73,11 @@ body {
     box-shadow: 0 0 10px rgba(83, 50, 165, 0.5);
 }
 
-form {
-    display: flex;
-    flex-direction: column;
+.form-cell form,
+#pointForm,
+#graphForm {
+    display: flex !important;
+    flex-direction: column !important;
 }
 
 .form-block {
@@ -88,33 +90,9 @@ form > .form-block > label {
     margin-bottom: 15px;
 }
 
-.results-container > .clear-button, .results-container > .update-button {
-    padding: 3%;
-    width: 100%;
-    background-color: #a341a1;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.results-container > .clear-button:hover, .results-container > .update-button:hover {
-    background-color: #6841a3;
-    border-color: #6841a3;
-}
-
-.button-group > .clear-button, .update-button {
-    display: inline-block;
-    width: 10%;
-    min-width: 40px;
-    margin: 1%;
-    box-sizing: border-box;
-    border: 1px solid #a341a1;
-}
-
 .form-block .ui-button,
 .index-button {
-    padding: 3% !important;
+    padding: 1% !important;
     width: 100% !important;
     box-sizing: border-box !important;
     background-color: #a341a1 !important;
@@ -272,11 +250,98 @@ form > .form-block > label {
     font-weight: bold !important;
 }
 
+[id$="r_slider"],
+[id$="r_slider"] .ui-slider,
+[id$="r_slider"] .ui-slider .ui-slider-range,
+[id$="r_slider"] .ui-slider-track {
+    background: rgba(181, 88, 239, 0.5) !important;
+    box-shadow: none !important;
+}
+
+[id$="r_slider"] .ui-slider {
+    height: 10px !important;
+    border-radius: 10px !important;
+    box-shadow: inset 0 2px 8px rgba(104, 65, 163, 0.4) !important;
+    position: relative !important;
+}
+
+[id$="r_slider"] .ui-slider-range {
+    background: #a341a1 !important;
+    border-radius: 10px !important;
+    height: 100% !important;
+    top: 0 !important;
+    transition: width 0.3s ease !important;
+}
+
+[id$="r_slider"] .ui-slider-handle {
+    width: 20px !important;
+    height: 20px !important;
+    background: white !important;
+    border: 3px solid #a341a1 !important;
+    border-radius: 50% !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin-left: -11px !important;
+    cursor: pointer !important;
+    transition: all 0.25s ease !important;
+    z-index: 2 !important;
+}
+
+[id$="r_slider"] .ui-slider-handle:hover {
+    transform: translateY(-50%) scale(1.2) !important;
+    box-shadow: 0 6px 16px rgba(163, 65, 161, 0.9) !important;
+    border-color: rgb(163, 65, 161) !important;
+}
+
+[id$="r_slider"] .ui-slider-handle:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 4px rgba(163, 65, 161, 0.4) !important;
+}
+
+[id$="r_slider"] {
+    margin-bottom: 20px !important;
+    margin-top: 10px !important;
+}
+
+.clear-button, .update-button {
+    padding: 1% 1% !important;
+    background-color: #a341a1 !important;
+    color: white !important;
+    border: none !important;
+    cursor: pointer !important;
+    min-width: 200px !important;
+    box-sizing: border-box !important;
+    transition: background-color 0.3s !important;
+}
+
+.clear-button:hover, .update-button:hover {
+    background-color: #6841a3 !important;
+}
+
 .results-container {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(83, 50, 165, 0.5);
     background-color: rgba(255, 255, 255, 0.75);
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start;
+    gap: 10px;
+    align-items: center;
+}
+
+.results-container h:form,
+.results-container form {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 20px !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    margin: 15px 0 !important;
+    padding: 0 !important;
 }
 
 table#resultsTable {
@@ -295,102 +360,39 @@ th {
     color: white;
 }
 
-td[data-result="true"] {
+.hit-yes  {
     color: #00805a;
 }
 
-td[data-result="false"] {
+.hit-no   {
     color: #ff0059;
 }
 
-.results-container > .clear-button, .results-container > .update-button {
-    padding: 1%;
-    display: inline-block;
-    width: 20%;
-    min-width: 100px;
-    box-sizing: border-box;
-    margin: 7px 0 10px 0;
+.ui-message-error,
+.ui-messages-error {
+    color: #c62828 !important;
+    border: 1px solid #ef9a9a !important;
+    border-radius: 8px !important;
+    padding: 14px 16px !important;
+    font-size: 14.5px !important;
+    font-weight: 500 !important;
+    box-shadow: 0 3px 10px rgba(198, 40, 40, 0.2) !important;
+    margin: 12px 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
 }
 
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-
-}
-
-.modal-content {
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    width: 400px;
-    min-height: 200px;
-    position: relative;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transform: scale(0.7);
-    transition: transform 0.3s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content p {
-    font-size: 20px;
-    margin: 0 0 20px 0;
-}
-
-.modal-close {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 30px;
-    cursor: pointer;
-    color: #333;
-}
-
-.modal-close:hover {
-    color: #a341a1;
-}
-
-.modal-buttons {
-    margin-top: 40px;
-    display: flex;
-    gap: 40px;
-    justify-content: center;
-    width: auto;
-}
-
-.modal-button {
-    padding: 15px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 20px;
-}
-
-.confirm-button {
-    background-color: #a341a1;
-    color: white;
-}
-
-.confirm-button:hover {
-    background-color: #6841a3;
-}
-
-.cancel-button {
-    background-color: #ccc;
-    color: black;
-}
-
-.cancel-button:hover {
-    background-color: #aaa;
+button:focus,
+input:focus,
+textarea:focus,
+select:focus,
+.ui-button:focus,
+.ui-inputfield:focus,
+.ui-spinner-input:focus,
+.ui-slider-handle:focus,
+a:focus,
+*[tabindex]:focus {
+    outline: none !important;
+    box-shadow: none !important;
 }
