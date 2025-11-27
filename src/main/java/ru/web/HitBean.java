@@ -3,6 +3,9 @@ package ru.web;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,12 +13,24 @@ import java.util.List;
 @Named("hitBean")
 @ViewScoped
 public class HitBean implements Serializable {
+    @Setter @Getter
     private Double x = null;
+
+    @Getter @Setter
     private Double y = null;
+
     private List<String> zValues = new ArrayList<>();
+
+    @Setter @Getter
     private Double r = 3.0;
+
+    @Setter @Getter
     private Double graphX = null;
+
+    @Getter @Setter
     private Double graphY = null;
+
+    @Setter @Getter
     private Double graphZ = null;
 
     @Inject
@@ -54,24 +69,7 @@ public class HitBean implements Serializable {
         return inSphere || inBox || inCone;
     }
 
-    public Double getX() { return x; }
-    public void setX(Double x) { this.x = x; }
-
-    public Double getY() { return y; }
-    public void setY(Double y) { this.y = y; }
-
     public List<String> getZValues() { return zValues; }
     public void setZValues(List<String> zValues) { this.zValues = zValues; }
 
-    public Double getR() { return r; }
-    public void setR(Double r) { this.r = r; }
-
-    public Double getGraphX() { return graphX; }
-    public void setGraphX(Double graphX) { this.graphX = graphX; }
-
-    public Double getGraphY() { return graphY; }
-    public void setGraphY(Double graphY) { this.graphY = graphY; }
-
-    public Double getGraphZ() { return graphZ; }
-    public void setGraphZ(Double graphZ) { this.graphZ = graphZ; }
 }
